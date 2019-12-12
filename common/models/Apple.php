@@ -8,17 +8,17 @@ use Throwable;
 
 /**
  * "Яблоко"
- * @property int         $id         Первичный ключ
- * @property string      $color      RGB-цвет
- * @property int         $eaten      Сколько съедено (процент)
- * @property string      $created_at Дата и время создания (появления)
- * @property string|null $fall_date  Дата и время падения
+ * @property int             $id         Первичный ключ
+ * @property string          $color      RGB-цвет
+ * @property int             $eaten      Сколько съедено (процент)
+ * @property string          $created_at Дата и время создания (появления)
+ * @property string|int|null $fall_date  Дата и время падения
  *
- * @property int         $size       Сколько процентов осталось (ещё не съедено)
- * @property int         $status     Состояние яблока (@see self::STATUS)
- * @property bool        $onTree     Яблоко всё ещё висит на дереве
- * @property bool        $onGround   Яблоко лежит на земле
- * @property bool        $rotten     Яблоко испортилось
+ * @property int             $size       Сколько процентов осталось (ещё не съедено)
+ * @property int             $status     Состояние яблока (@see self::STATUS)
+ * @property bool            $onTree     Яблоко всё ещё висит на дереве
+ * @property bool            $onGround   Яблоко лежит на земле
+ * @property bool            $rotten     Яблоко испортилось
  *
  */
 class Apple extends ActiveRecord
@@ -46,12 +46,21 @@ class Apple extends ActiveRecord
     public function rules(): array
     {
         return [
-            ['tmp','integer'],
             ['eaten', 'default', 'value' => 0],
             ['color', 'required'],
             ['color', 'filter', 'filter' => 'strtoupper'],
             ['color', 'match', 'pattern' => '/^[0-9A-Z]{6}$/'],
             ['eaten', 'integer', 'min' => 0, 'max' => 100],
+            [
+                'fall_date',
+                'filter',
+                'filter' => function ($value) {
+                    if (is_int($value) === true) {
+                        $value = date('Y-m-d H:i:s', $value);
+                    }
+                    return $value;
+                },
+            ],
             [['created_at', 'fall_date'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
         ];
     }

@@ -44,11 +44,12 @@ $this->title = 'Яблоки';
                             if ($apple->onTree === true) {
                                 return 'На дереве';
                             } elseif ($apple->rotten === true) {
-                                return 'Гнилое :(';
+                                return '<strong>Сгнило</strong> ' . $apple->rotterPeriod() . ' назад (:';
                             } else {
-                                return 'Лежит на земле';
+                                return '<strong>Лежит на земле</strong> уже ' . $apple->fallPeriod();
                             }
                         },
+                        'format' => 'raw',
                     ],
                     [
                         'attribute' => 'eaten',
@@ -82,6 +83,8 @@ $this->title = 'Яблоки';
         'action' => Url::toRoute('site/create'),
     ]); ?>
     <?= $form->field($appleActionForm, 'quantity')->textInput(['type' => 'number']) ?>
+    <?= $form->field($appleActionForm, 'onGround')->checkbox() ?>
+    <p>Если &laquo;сорвать несколько&raquo; установлен, то часть яблок будет сорвана и лежать на земле.</p>
     <div class="form-group">
         <?= Html::submitButton('Создать', ['class' => 'btn btn-primary']) ?>
     </div>

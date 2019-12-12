@@ -31,6 +31,8 @@ class AppleActionForm extends ModelManagerForm
     public $quantity;
     /** @var int Количество для "откусить" */
     public $percent;
+    /** @var bool Сбросить некоторое количество яблок на землю */
+    public $onGround;
 
     public const SCENARIO_CREATE = 'create'; //добавить яблоки
     public const SCENARIO_FALL = 'fall'; //сбросить на землю
@@ -40,7 +42,7 @@ class AppleActionForm extends ModelManagerForm
     public function scenarios()
     {
         return [
-            self::SCENARIO_CREATE => ['quantity'],
+            self::SCENARIO_CREATE => ['quantity', 'onGround'],
             self::SCENARIO_FALL => ['id'],
             self::SCENARIO_EAT => ['id', 'percent'],
             self::SCENARIO_DELETE => ['id'],
@@ -50,12 +52,17 @@ class AppleActionForm extends ModelManagerForm
     public function rules(): array
     {
         return [
-            ['id', 'required', 'on' => [self::SCENARIO_FALL, self::SCENARIO_EAT, self::SCENARIO_DELETE]],
+            [['id', 'quantity', 'percent'], 'required'],
+            [
+                'onGround',
+                'filter',
+                'filter' => function ($value) {
+                    return (bool)$value;
+                },
+            ],
             ['id', 'integer'],
             ['id', 'exist', 'targetClass' => Apple::class],
-            ['quantity', 'required', 'on' => [self::SCENARIO_CREATE]],
             ['quantity', 'integer', 'min' => 1, 'max' => 1000],
-            ['percent', 'required', 'on' => [self::SCENARIO_EAT]],
             ['percent', 'integer', 'max' => 100],
         ];
     }
@@ -65,6 +72,7 @@ class AppleActionForm extends ModelManagerForm
         return [
             'quantity' => 'Количество',
             'percent' => 'Количество (%)',
+            'onGround' => 'Сорвать несколько',
         ];
     }
 
@@ -82,6 +90,10 @@ class AppleActionForm extends ModelManagerForm
         }
         for ($i = 0; $i < $this->quantity; $i++) {
             $apple = Apple::instanceRand();
+            if ($this->onGround === true && rand(0, 1) === 1) {
+                $time = time();
+                $apple->fall_date = rand($time - $apple::RAND_FALL_PERIOD_MIN, $time - $apple::RAND_FALL_PERIOD_MAX);
+            }
             if ($apple->save() === false) {
                 $this->addErrors($apple->getFirstErrors());
                 return $i + 1;
@@ -109,7 +121,6 @@ class AppleActionForm extends ModelManagerForm
      * "Откусить"
      * @return bool Успешно ли откушен кусочек яблока
      * @throws Throwable
-     * @throws StaleObjectException
      */
     public function eat(): bool
     {
