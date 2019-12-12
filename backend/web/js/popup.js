@@ -20,11 +20,11 @@ var popup = (function (contentContainer) {
         return popup;
     };
     var show = function () {
-        _panel.style.display = 'flex';
+        _panel.className = 'popup shown';
         return popup;
     };
     var hide = function () {
-        _panel.style.display = 'none';
+        _panel.className = 'popup hidden';
         return popup;
     };
 
@@ -45,8 +45,7 @@ var popup = (function (contentContainer) {
 
     function _createPanel() {
         _panel = document.createElement('div');
-        _panel.style.display = 'none';
-        _panel.className = 'popup';
+        _panel.className = 'popup hidden';
         _panel.innerHTML = '<div><div class="close">X</div><h3></h3><div class="content"></div></div>';
         _title = _panel.getElementsByTagName('h3')[0];
         _container = _panel.getElementsByClassName('content')[0];

@@ -126,6 +126,7 @@ a.desc:after {
 }
 
 .button, .actions > * {
+    position: relative;
     display: inline-block;
     height: 40px;
     padding: 5px;
@@ -134,11 +135,17 @@ a.desc:after {
     border-radius: 4px;
     background: #eee;
     cursor: pointer;
+    top: 0;
+    left: 0;
+    transition: top 0.5s, left 0.5s, box-shadow 0.5s, liner;
 }
 
 .button:hover, .actions > *:hover {
     color: #c20000;
     text-decoration: none;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+    top: -2px;
+    left: -2px;
 }
 
 #apple-create, #apple-fall, #apple-eat, #apple-delete {
@@ -152,9 +159,23 @@ a.desc:after {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.4);
-    display: flex;
+    display: flex !important;
     justify-content: center;
     align-items: center;
+}
+
+.popup {
+    transition: visibility 0s, opacity 0.2s linear;
+}
+
+.popup.hidden {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.popup.shown {
+    visibility: visible;
+    opacity: 1;
 }
 
 .popup > div {
@@ -168,6 +189,11 @@ a.desc:after {
 
 .popup > div > h3 {
     margin-top: 0;
+}
+
+.popup .form-group:last-child {
+    margin-bottom: 0;
+    text-align: right;
 }
 
 table span.color {
